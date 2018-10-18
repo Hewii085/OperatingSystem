@@ -146,7 +146,7 @@ PRINTMESSAGE:
 
 	ret
 
-MESSAGE1:	db 'MINT64 OS Boot Loader Start~!!', 0
+MESSAGE1:	db 'Hewii64 OS Boot Loader Start~!!', 0
 
 DISKERRORMESSAGE:	db	'DISK Error~!!', 0
 IMAGELOADINGMESSAGE:	db	'OS Image Loading...', 0
