@@ -1,5 +1,5 @@
 NASM32 = nasm
-GCC32 = x86_64-pc-linux-gcc.exe -c m32 -ffreestanding
+GCC32 = x86_64-pc-linux-gcc.exe -c -m32 -ffreestanding
 LD32 = x86_64-pc-linux-ld.exe -melf_i386 -T ../elf_i386.x -nostdlib -e Main -Ttext 0x10200
 OBJCOPY32 = x86_64-pc-linux-objcopy -j .text -j .data -j .rodata -j .bss -S -O binary
 
@@ -16,16 +16,14 @@ $(OBJECTDIRECTORY)/EntryPoint.bin: $(SOURCEDIRECTORY)/EntryPoint.s
 	
 dep:
 	@echo === Make Dependancy File ===
-	
 	make -C $(OBJECTDIRECTORY) -f ../makefile InternalDependency
-	
 	@echo === Dependancy Search Complete ===
 	
-ExcuteInternalBuild: dep
+ExecuteInternalBuild: dep
 	make -C $(OBJECTDIRECTORY) -f ../makefile Kernel32.elf
 	
 $(OBJECTDIRECTORY)/Kernel32.elf.bin: ExecuteInternalBuild
-	$(OBJCOPY32) $(OBJECTDIRETORY)/Kernel32.elf $@
+	$(OBJCOPY32) $(OBJECTDIRECTORY)/Kernel32.elf $@
 	
 Kernel32.bin: $(OBJECTDIRECTORY)/EntryPoint.bin $(OBJECTDIRECTORY)/Kernel32.elf.bin
 	cat $^ > $@
@@ -36,8 +34,8 @@ clean:
 	
 CENTRYPOINTOBJECTFILE = Main.o
 CSOURCEFILES = $(wildcard ../$(SOURCEDIRECTORY)/*.c)
-ASSEMBLYSOURCEFILES = $(wildcard ../$(SOURCEDIRECTORY)*.asm)
-COBJECTFILES = $(subst Main.o, , $(notdir $(patsubst %.c,%.o,$(CSOURCFILES))))
+ASSEMBLYSOURCEFILES = $(wildcard ../$(SOURCEDIRECTORY)/*.asm)
+COBJECTFILES = $(subst Main.o, , $(notdir $(patsubst %.c,%.o,$(CSOURCEFILES))))
 ASSEMBLYOBJECTFILES = $(notdir $(patsubst %.asm,%.o,$(ASSEMBLYSOURCEFILES)))
 
 %.o: ../$(SOURCEDIRECTORY)/%.c
@@ -49,7 +47,7 @@ ASSEMBLYOBJECTFILES = $(notdir $(patsubst %.asm,%.o,$(ASSEMBLYSOURCEFILES)))
 InternalDependency:
 	$(GCC32) -MM $(CSOURCEFILES) > Dependency.dep
 	
-Kenel32.elf: $(CENTRYPOINTOBJECTFILE) $(COBJECTFILES) $(ASSEMBLYOBJECTFILES)
+Kernel32.elf: $(CENTRYPOINTOBJECTFILE) $(COBJECTFILES) $(ASSEMBLYOBJECTFILES)
 	$(LD32) -o $@ $^
 	
 ifeq (Dependency.dep, $(wildcard Dependency.dep))
