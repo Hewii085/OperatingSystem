@@ -23,7 +23,6 @@ void KInitializePageTables(void)
 		KSetPageEntryData(&(pstPDPTEntry[i]),0,0,0,0);
 	}
 
-
 	pstPDEntry = (PDENTRY*)0x102000;
 
 	for(i=0; i< PAGE_MAXENTRYCOUNT*64;i++)
