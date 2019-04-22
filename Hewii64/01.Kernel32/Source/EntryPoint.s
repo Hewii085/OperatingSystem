@@ -22,7 +22,7 @@ START:
 
 .A20GATESUCCESS:
 	cli
-	lgdt [ GDTR ]
+	lgdt [ GDTR ] ;GDT table ¼³Á¤
 
 	mov eax, 0x4000003B
 	mov cr0, eax

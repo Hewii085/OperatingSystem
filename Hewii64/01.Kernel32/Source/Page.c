@@ -20,10 +20,11 @@ void KInitializePageTables(void)
 
 	for(i =0; i<64; i++)
 	{
-		KSetPageEntryData(&(pstPDPTEntry[i]),0,0,0,0);
+		KSetPageEntryData(&(pstPDPTEntry[i]),0,0x102000+(i*PAGE_TABLESIZE),PAGE_FLAGS_DEFAULT,0);
 	}
 
 	pstPDEntry = (PDENTRY*)0x102000;
+	dwMappingAddress = 0;
 
 	for(i=0; i< PAGE_MAXENTRYCOUNT*64;i++)
 	{
