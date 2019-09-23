@@ -1,5 +1,5 @@
 #include "Utility.h"
-
+#include "AssemblyUtility.h"
 /**
  *  메모리를 특정 값으로 채움
  */
@@ -39,10 +39,34 @@ int kMemCmp( const void* pvDestination, const void* pvSource, int iSize )
     for( i = 0 ; i < iSize ; i++ )
     {
         cTemp = ( ( char* ) pvDestination )[ i ] - ( ( char* ) pvSource )[ i ];
+
         if( cTemp != 0 )
         {
             return ( int ) cTemp;
         }
     }
     return 0;
+}
+
+BOOL kSetInterruptFlag(BOOL bEnableInterrupt)
+{
+	QWORD qwRFLAGS;
+
+	qwRFLAGS = kReadRFLAGS();
+
+	if(bEnableInterrupt==TRUE)
+	{
+		kEnableInterrupt();
+	}
+	else
+	{
+		kDisableInterrupt();
+	}
+
+	if(qwRFLAGS & 0x0200)
+	{
+		return TRUE;
+	}
+
+	return FALSE;
 }
