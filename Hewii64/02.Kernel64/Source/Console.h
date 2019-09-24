@@ -1,48 +1,64 @@
-/*
- * Console.h
- *
- *  Created on: 2019. 9. 23.
- *      Author: Bin
- */
+#ifndef __CONSOLE_H__
+#define __CONSOLE_H__
 
-#ifndef __CONSOLESHELL_H_
-#define __CONSOLESHELL_H_
 
 #include "Types.h"
 
-#define CONSOLESHELL_MAXCOMMANDBUFFERCOUNT	300
-#define CONSOLESHELL_PROMPTMESSAGE			"MINT64>"
+#define CONSOLE_BACKGROUND_BLACK            0x00
+#define CONSOLE_BACKGROUND_BLUE             0x10
+#define CONSOLE_BACKGROUND_GREEN            0x20
+#define CONSOLE_BACKGROUND_CYAN             0x30
+#define CONSOLE_BACKGROUND_RED              0x40
+#define CONSOLE_BACKGROUND_MAGENTA          0x50
+#define CONSOLE_BACKGROUND_BROWN            0x60
+#define CONSOLE_BACKGROUND_WHITE            0x70
+#define CONSOLE_BACKGROUND_BLINK            0x80
+#define CONSOLE_FOREGROUND_DARKBLACK        0x00
+#define CONSOLE_FOREGROUND_DARKBLUE         0x01
+#define CONSOLE_FOREGROUND_DARKGREEN        0x02
+#define CONSOLE_FOREGROUND_DARKCYAN         0x03
+#define CONSOLE_FOREGROUND_DARKRED          0x04
+#define CONSOLE_FOREGROUND_DARKMAGENTA      0x05
+#define CONSOLE_FOREGROUND_DARKBROWN        0x06
+#define CONSOLE_FOREGROUND_DARKWHITE        0x07
+#define CONSOLE_FOREGROUND_BRIGHTBLACK      0x08
+#define CONSOLE_FOREGROUND_BRIGHTBLUE       0x09
+#define CONSOLE_FOREGROUND_BRIGHTGREEN      0x0A
+#define CONSOLE_FOREGROUND_BRIGHTCYAN       0x0B
+#define CONSOLE_FOREGROUND_BRIGHTRED        0x0C
+#define CONSOLE_FOREGROUND_BRIGHTMAGENTA    0x0D
+#define CONSOLE_FOREGROUND_BRIGHTYELLOW     0x0E
+#define CONSOLE_FOREGROUND_BRIGHTWHITE      0x0F
 
-typedef void (* CommandFunction)(const char* pcParameter);
+#define CONSOLE_DEFAULTTEXTCOLOR (CONSOLE_BACKGROUND_BLACK|CONSOLE_FOREGROUND_BRIGHTGREEN)
+
+#define CONSOLE_WIDTH		80
+#define CONSOLE_HEIGHT		25
+#define CONSOLE_VIDEOMEMORYADDRESS 0XB80000
+
+#define VGA_PORT_INDEX			0x3D4
+#define VGA_PORT_DATA			0x3D5
+#define VGA_INDEX_UPPERCURSOR	0x0E
+#define VGA_INDEX_LOWERCURSOR	0x0F
+
 
 #pragma pack(push, 1)
 
-typedef struct kShellCommandEntryStruct
+typedef struct kConsoleManagerStruct
 {
-	char* pcCommand;
-	char* pcHelp;
-
-	CommandFunction pfFunction;
-}SHELLCOMMANDENTRY;
-
-typedef struct kParameterListStruct
-{
-	const char* pcBuffer;
-	int iLength;
-	int iCurrentPosition;
-}PARAMETERLIST;
+	int iCurrentPrintOffset;
+}CONSOLEMANAGER;
 
 #pragma pack(pop)
 
-void kStartConsoleShell(void);
-void kExecuteCommand(const char* pcCommandBuffer);
-void kInitializeParameter(PARAMETERLIST* pstList, const char* pcParameter);
-int kGetNextParameter(PARAMETERLIST* pstList, char* pcParameter);
+void kInitializeConsole(int iX, int iY);
+void kSetCursor(int piX, int piY);
+void kGetCursor(int *piX, int *piY);
+void kPrintf(const char* pcFormatString, ...);
+int kConsolePrintString(const char* pcBuffer);
+void kClearScreen(void);
+BYTE kGetCh(void);
+void kPrintStringXY(int iX, int iY, const char* pcString);
 
-void kHelp(const char* pcParameterBuffer);
-void kCls(const char* pcParameterBuffer);
-void kShowTotalRAMSize(const char* pcParameterBuffer);
-void kStringToDecimalHexTest(const char* pcParameterBuffer);
-void kShutdown(const char* pcParamegerBuffer);
 
-#endif /* 02_KERNEL64_SOURCE_CONSOLE_H_ */
+#endif
