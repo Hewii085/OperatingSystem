@@ -1,5 +1,6 @@
 
 #include <stdarg.h>
+#include "Utility.h"
 #include "Console.h"
 #include "Keyboard.h"
 
@@ -8,7 +9,6 @@ CONSOLEMANAGER gs_stConsoleManager = {0,};
 void kInitializeConsole(int iX, int iY)
 {
 	kMemSet(&gs_stConsoleManager, 0, sizeof(gs_stConsoleManager));
-
 	kSetCursor(iX,iY);
 }
 
