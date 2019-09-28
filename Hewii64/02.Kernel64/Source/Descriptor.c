@@ -2,13 +2,6 @@
 #include "Utility.h"
 #include "ISR.h"
 
-//==============================================================================
-//  GDT 및 TSS
-//==============================================================================
-
-/**
- *  GDT 테이블을 초기화
- */
 void kInitializeGDTTableAndTSS( void )
 {
     GDTR* pstGDTR;
@@ -16,15 +9,12 @@ void kInitializeGDTTableAndTSS( void )
     TSSSEGMENT* pstTSS;
     int i;
 
-    // GDTR 설정
     pstGDTR = ( GDTR* ) GDTR_STARTADDRESS;
     pstEntry = ( GDTENTRY8* ) ( GDTR_STARTADDRESS + sizeof( GDTR ) );
     pstGDTR->wLimit = GDT_TABLESIZE - 1;
     pstGDTR->qwBaseAddress = ( QWORD ) pstEntry;
-    // TSS 영역 설정
     pstTSS = ( TSSSEGMENT* ) ( ( QWORD ) pstEntry + GDT_TABLESIZE );
 
-    // NULL, 64비트 Code/Data, TSS를 위해 총 4개의 세그먼트를 생성한다.
     kSetGDTEntry8( &( pstEntry[ 0 ] ), 0, 0, 0, 0, 0 );
     kSetGDTEntry8( &( pstEntry[ 1 ] ), 0, 0xFFFFF, GDT_FLAGS_UPPER_CODE,
             GDT_FLAGS_LOWER_KERNELCODE, GDT_TYPE_CODE );
@@ -34,14 +24,9 @@ void kInitializeGDTTableAndTSS( void )
             sizeof( TSSSEGMENT ) - 1, GDT_FLAGS_UPPER_TSS, GDT_FLAGS_LOWER_TSS,
             GDT_TYPE_TSS );
 
-    // TSS 초기화 GDT 이하 영역을 사용함
     kInitializeTSSSegment( pstTSS );
 }
 
-/**
- *  8바이트 크기의 GDT 엔트리에 값을 설정
- *      코드와 데이터 세그먼트 디스크립터를 설정하는데 사용
- */
 void kSetGDTEntry8( GDTENTRY8* pstEntry, DWORD dwBaseAddress, DWORD dwLimit,
         BYTE bUpperFlags, BYTE bLowerFlags, BYTE bType )
 {
@@ -54,10 +39,6 @@ void kSetGDTEntry8( GDTENTRY8* pstEntry, DWORD dwBaseAddress, DWORD dwLimit,
     pstEntry->bUpperBaseAddress2 = ( dwBaseAddress >> 24 ) & 0xFF;
 }
 
-/**
- *  16바이트 크기의 GDT 엔트리에 값을 설정
- *      TSS 세그먼트 디스크립터를 설정하는데 사용
- */
 void kSetGDTEntry16( GDTENTRY16* pstEntry, QWORD qwBaseAddress, DWORD dwLimit,
         BYTE bUpperFlags, BYTE bLowerFlags, BYTE bType )
 {
@@ -72,40 +53,25 @@ void kSetGDTEntry16( GDTENTRY16* pstEntry, QWORD qwBaseAddress, DWORD dwLimit,
     pstEntry->dwReserved = 0;
 }
 
-/**
- *  TSS 세그먼트의 정보를 초기화
- */
 void kInitializeTSSSegment( TSSSEGMENT* pstTSS )
 {
     kMemSet( pstTSS, 0, sizeof( TSSSEGMENT ) );
     pstTSS->qwIST[ 0 ] = IST_STARTADDRESS + IST_SIZE;
-    // IO 를 TSS의 limit 값보다 크게 설정함으로써 IO Map을 사용하지 않도록 함
     pstTSS->wIOMapBaseAddress = 0xFFFF;
 }
 
 
-//==============================================================================
-//  IDT
-//==============================================================================
-/**
- *  IDT 테이블을 초기화
- */
 void kInitializeIDTTables( void )
 {
     IDTR* pstIDTR;
     IDTENTRY* pstEntry;
     int i;
 
-    // IDTR의 시작 어드레스
     pstIDTR = ( IDTR* ) IDTR_STARTADDRESS;
-    // IDT 테이블의 정보 생성
     pstEntry = ( IDTENTRY* ) ( IDTR_STARTADDRESS + sizeof( IDTR ) );
     pstIDTR->qwBaseAddress = ( QWORD ) pstEntry;
     pstIDTR->wLimit = IDT_TABLESIZE - 1;
 
-    //==========================================================================
-    // 예외 ISR 등록
-    //==========================================================================
     kSetIDTEntry( &( pstEntry[ 0 ] ), kISRDivideError, 0x08, IDT_FLAGS_IST1,
         IDT_FLAGS_KERNEL, IDT_TYPE_INTERRUPT );
     kSetIDTEntry( &( pstEntry[ 1 ] ), kISRDebug, 0x08, IDT_FLAGS_IST1,
@@ -154,9 +120,7 @@ void kInitializeIDTTables( void )
         kSetIDTEntry( &( pstEntry[ i ] ), kISRETCException, 0x08, IDT_FLAGS_IST1,
             IDT_FLAGS_KERNEL, IDT_TYPE_INTERRUPT );
     }
-    //==========================================================================
-    // 인터럽트 ISR 등록
-    //==========================================================================
+ 
     kSetIDTEntry( &( pstEntry[ 32 ] ), kISRTimer, 0x08, IDT_FLAGS_IST1,
         IDT_FLAGS_KERNEL, IDT_TYPE_INTERRUPT );
     kSetIDTEntry( &( pstEntry[ 33 ] ), kISRKeyboard, 0x08, IDT_FLAGS_IST1,
@@ -197,9 +161,6 @@ void kInitializeIDTTables( void )
     }
 }
 
-/**
- *  IDT 게이트 디스크립터에 값을 설정
- */
 void kSetIDTEntry( IDTENTRY* pstEntry, void* pvHandler, WORD wSelector,
         BYTE bIST, BYTE bFlags, BYTE bType )
 {

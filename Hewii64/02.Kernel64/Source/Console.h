@@ -1,7 +1,6 @@
 #ifndef __CONSOLE_H__
 #define __CONSOLE_H__
 
-
 #include "Types.h"
 
 #define CONSOLE_BACKGROUND_BLACK            0x00
@@ -29,36 +28,34 @@
 #define CONSOLE_FOREGROUND_BRIGHTMAGENTA    0x0D
 #define CONSOLE_FOREGROUND_BRIGHTYELLOW     0x0E
 #define CONSOLE_FOREGROUND_BRIGHTWHITE      0x0F
+#define CONSOLE_DEFAULTTEXTCOLOR            ( CONSOLE_BACKGROUND_BLACK | \
+        CONSOLE_FOREGROUND_BRIGHTGREEN )
 
-#define CONSOLE_DEFAULTTEXTCOLOR (CONSOLE_BACKGROUND_BLACK|CONSOLE_FOREGROUND_BRIGHTGREEN)
+#define CONSOLE_WIDTH               80
+#define CONSOLE_HEIGHT              25
+#define CONSOLE_VIDEOMEMORYADDRESS  0xB8000
 
-#define CONSOLE_WIDTH		80
-#define CONSOLE_HEIGHT		25
-#define CONSOLE_VIDEOMEMORYADDRESS 0XB80000
+#define VGA_PORT_INDEX              0x3D4
+#define VGA_PORT_DATA               0x3D5
+#define VGA_INDEX_UPPERCURSOR       0x0E
+#define VGA_INDEX_LOWERCURSOR       0x0F
 
-#define VGA_PORT_INDEX			0x3D4
-#define VGA_PORT_DATA			0x3D5
-#define VGA_INDEX_UPPERCURSOR	0x0E
-#define VGA_INDEX_LOWERCURSOR	0x0F
-
-
-#pragma pack(push, 1)
+#pragma pack( push, 1 )
 
 typedef struct kConsoleManagerStruct
 {
-	int iCurrentPrintOffset;
-}CONSOLEMANAGER;
+    int iCurrentPrintOffset;
+} CONSOLEMANAGER;
 
-#pragma pack(pop)
+#pragma pack( pop )
 
-void kInitializeConsole(int iX, int iY);
-void kSetCursor(int piX, int piY);
-void kGetCursor(int *piX, int *piY);
-void kPrintf(const char* pcFormatString, ...);
-int kConsolePrintString(const char* pcBuffer);
-void kClearScreen(void);
-BYTE kGetCh(void);
-void kPrintStringXY(int iX, int iY, const char* pcString);
+void kInitializeConsole( int iX, int iY );
+void kSetCursor( int iX, int iY );
+void kGetCursor( int *piX, int *piY );
+void kPrintf( const char* pcFormatString, ... );
+int kConsolePrintString( const char* pcBuffer );
+void kClearScreen( void );
+BYTE kGetCh( void );
+void kPrintStringXY( int iX, int iY, const char* pcString );
 
-
-#endif
+#endif /*__CONSOLE_H__*/

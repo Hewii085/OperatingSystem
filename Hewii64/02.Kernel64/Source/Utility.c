@@ -244,7 +244,7 @@ int kDecimalToString( long lValue, char* pcBuffer )
 
     for( ; lValue > 0 ; i++ )
     {
-        pcBuffer[ i ] = '0' + lValue % 10;
+        pcBuffer[ i ] = '0' + lValue % 10;// IVALUE & 0XFFFFFFF8 하면 빠를거같은데 타입이 문제
         lValue = lValue / 10;
     }
     pcBuffer[ i ] = '\0';
