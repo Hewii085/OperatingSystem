@@ -57,5 +57,6 @@ int kConsolePrintString( const char* pcBuffer );
 void kClearScreen( void );
 BYTE kGetCh( void );
 void kPrintStringXY( int iX, int iY, const char* pcString );
+void kCreateTestTask(const char* pcParameterBuffer);
 
 #endif /*__CONSOLE_H__*/
